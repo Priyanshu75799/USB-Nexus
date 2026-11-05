@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Mass Storage Devices (0x08) -->
+    <usb-device usb-class="8" />
+    <!-- Human Interface Devices - Keyboards, Mice, Gamepads (0x03) -->
+    <usb-device usb-class="3" />
+    <!-- Communications & CDC Control Devices - Serial, Modems (0x02) -->
+    <usb-device usb-class="2" />
+    <!-- CDC Data (0x0A) -->
+    <usb-device usb-class="10" />
+    <!-- Audio Devices (0x01) -->
+    <usb-device usb-class="1" />
+    <!-- Video Devices - Webcams (0x0E) -->
+    <usb-device usb-class="14" />
+    <!-- Vendor Specific Devices (0xFF) -->
+    <usb-device usb-class="255" />
+</resources>

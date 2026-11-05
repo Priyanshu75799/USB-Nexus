@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- ========================================================= -->
+    <!-- USB NEXUS APP ICON                                        -->
+    <!-- Dark technical background + cyan USB + SoC circuitry     -->
+    <!-- ========================================================= -->
+
+
+    <!-- Main rounded technical frame -->
+    <path
+        android:pathData="M22,8
+                          L86,8
+                          A14,14 0 0,1 100,22
+                          L100,86
+                          A14,14 0 0,1 86,100
+                          L22,100
+                          A14,14 0 0,1 8,86
+                          L8,22
+                          A14,14 0 0,1 22,8 Z"
+        android:fillColor="#07152B"
+        android:strokeColor="#008CFF"
+        android:strokeWidth="2" />
+
+
+    <!-- ========================================================= -->
+    <!-- OUTER PCB TRACES                                          -->
+    <!-- ========================================================= -->
+
+    <!-- Left upper trace -->
+    <path
+        android:pathData="M8,30 L18,30 L25,37"
+        android:strokeColor="#007BFF"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+
+    <!-- Left middle trace -->
+    <path
+        android:pathData="M8,48 L18,48 L25,55"
+        android:strokeColor="#00B8FF"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+
+    <!-- Left lower trace -->
+    <path
+        android:pathData="M8,70 L18,70 L25,63"
+        android:strokeColor="#007BFF"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+
+    <!-- Right upper trace -->
+    <path
+        android:pathData="M100,30 L90,30 L83,37"
+        android:strokeColor="#007BFF"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+
+    <!-- Right middle trace -->
+    <path
+        android:pathData="M100,48 L90,48 L83,55"
+        android:strokeColor="#00B8FF"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+
+    <!-- Right lower trace -->
+    <path
+        android:pathData="M100,70 L90,70 L83,63"
+        android:strokeColor="#007BFF"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+
+
+    <!-- ========================================================= -->
+    <!-- CENTRAL SOC / MICROCHIP                                   -->
+    <!-- ========================================================= -->
+
+    <!-- Chip body -->
+    <path
+        android:pathData="M32,28
+                          L76,28
+                          A5,5 0 0,1 81,33
+                          L81,75
+                          A5,5 0 0,1 76,80
+                          L32,80
+                          A5,5 0 0,1 27,75
+                          L27,33
+                          A5,5 0 0,1 32,28 Z"
+        android:fillColor="#0B1D38"
+        android:strokeColor="#00AFFF"
+        android:strokeWidth="2" />
+
+
+    <!-- Inner chip -->
+    <path
+        android:pathData="M37,34
+                          L71,34
+                          A3,3 0 0,1 74,37
+                          L74,71
+                          A3,3 0 0,1 71,74
+                          L37,74
+                          A3,3 0 0,1 34,71
+                          L34,37
+                          A3,3 0 0,1 37,34 Z"
+        android:fillColor="#08162C"
+        android:strokeColor="#007BFF"
+        android:strokeWidth="1" />
+
+
+    <!-- ========================================================= -->
+    <!-- CHIP PINS                                                  -->
+    <!-- ========================================================= -->
+
+    <!-- Top pins -->
+    <path
+        android:pathData="M40,28 L40,23
+                          M46,28 L46,23
+                          M54,28 L54,22
+                          M62,28 L62,23
+                          M68,28 L68,23"
+        android:strokeColor="#00C8FF"
+        android:strokeWidth="2"
+        android:strokeLineCap="round" />
+
+    <!-- Bottom pins -->
+    <path
+        android:pathData="M40,80 L40,85
+                          M46,80 L46,85
+                          M54,80 L54,86
+                          M62,80 L62,85
+                          M68,80 L68,85"
+        android:strokeColor="#00C8FF"
+        android:strokeWidth="2"
+        android:strokeLineCap="round" />
+
+    <!-- Left pins -->
+    <path
+        android:pathData="M27,40 L22,40
+                          M27,47 L22,47
+                          M27,54 L21,54
+                          M27,61 L22,61
+                          M27,68 L22,68"
+        android:strokeColor="#00C8FF"
+        android:strokeWidth="2"
+        android:strokeLineCap="round" />
+
+    <!-- Right pins -->
+    <path
+        android:pathData="M81,40 L86,40
+                          M81,47 L86,47
+                          M81,54 L87,54
+                          M81,61 L86,61
+                          M81,68 L86,68"
+        android:strokeColor="#00C8FF"
+        android:strokeWidth="2"
+        android:strokeLineCap="round" />
+
+
+    <!-- ========================================================= -->
+    <!-- USB SYMBOL                                                 -->
+    <!-- ========================================================= -->
+
+    <!-- Central USB trunk -->
+    <path
+        android:pathData="M54,65 L54,43"
+        android:strokeColor="#00E5FF"
+        android:strokeWidth="4"
+        android:strokeLineCap="round" />
+
+    <!-- USB arrow -->
+    <path
+        android:pathData="M54,34 L47,44 L61,44 Z"
+        android:fillColor="#00E5FF" />
+
+    <!-- Left USB branch -->
+    <path
+        android:pathData="M54,56
+                          L46,56
+                          L40,50
+                          L40,46"
+        android:strokeColor="#00D9FF"
+        android:strokeWidth="3.5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+
+    <!-- Right USB branch -->
+    <path
+        android:pathData="M54,56
+                          L62,56
+                          L68,50
+                          L68,44"
+        android:strokeColor="#00D9FF"
+        android:strokeWidth="3.5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+
+
+    <!-- Left USB circular connector -->
+    <path
+        android:pathData="M35.5,46
+                          A4.5,4.5 0 1,0 44.5,46
+                          A4.5,4.5 0 1,0 35.5,46 Z"
+        android:fillColor="#00D9FF" />
+
+    <!-- Right USB square connector -->
+    <path
+        android:pathData="M64,40
+                          L72,40
+                          L72,48
+                          L64,48 Z"
+        android:fillColor="#00D9FF" />
+
+    <!-- USB base circle -->
+    <path
+        android:pathData="M48.5,65
+                          A5.5,5.5 0 1,0 59.5,65
+                          A5.5,5.5 0 1,0 48.5,65 Z"
+        android:fillColor="#008CFF" />
+
+
+    <!-- ========================================================= -->
+    <!-- ADDITIONAL NEXUS CONNECTION NODES                         -->
+    <!-- ========================================================= -->
+
+    <!-- Left nodes -->
+    <path
+        android:pathData="M15,30 A2,2 0 1,0 19,30 A2,2 0 1,0 15,30 Z"
+        android:fillColor="#00D9FF" />
+
+    <path
+        android:pathData="M15,48 A2,2 0 1,0 19,48 A2,2 0 1,0 15,48 Z"
+        android:fillColor="#00D9FF" />
+
+    <path
+        android:pathData="M15,70 A2,2 0 1,0 19,70 A2,2 0 1,0 15,70 Z"
+        android:fillColor="#008CFF" />
+
+    <!-- Right nodes -->
+    <path
+        android:pathData="M89,30 A2,2 0 1,0 93,30 A2,2 0 1,0 89,30 Z"
+        android:fillColor="#00D9FF" />
+
+    <path
+        android:pathData="M89,48 A2,2 0 1,0 93,48 A2,2 0 1,0 89,48 Z"
+        android:fillColor="#00D9FF" />
+
+    <path
+        android:pathData="M89,70 A2,2 0 1,0 93,70 A2,2 0 1,0 89,70 Z"
+        android:fillColor="#008CFF" />
+
+
+    <!-- ========================================================= -->
+    <!-- BOTTOM USB NEXUS CONNECTION                               -->
+    <!-- ========================================================= -->
+
+    <path
+        android:pathData="M44,80 L44,88 L38,94"
+        android:strokeColor="#008CFF"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+
+    <path
+        android:pathData="M54,80 L54,92"
+        android:strokeColor="#00D9FF"
+        android:strokeWidth="2"
+        android:strokeLineCap="round" />
+
+    <path
+        android:pathData="M64,80 L64,88 L70,94"
+        android:strokeColor="#008CFF"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+
+    <!-- Bottom connection nodes -->
+    <path
+        android:pathData="M35,94 A2.5,2.5 0 1,0 40,94 A2.5,2.5 0 1,0 35,94 Z"
+        android:fillColor="#00BFFF" />
+
+    <path
+        android:pathData="M51.5,94 A2.5,2.5 0 1,0 56.5,94 A2.5,2.5 0 1,0 51.5,94 Z"
+        android:fillColor="#00E5FF" />
+
+    <path
+        android:pathData="M68,94 A2.5,2.5 0 1,0 73,94 A2.5,2.5 0 1,0 68,94 Z"
+        android:fillColor="#00BFFF" />
+
+</vector>

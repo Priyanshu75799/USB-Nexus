@@ -1,0 +1,50 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="96dp"
+    android:height="96dp"
+    android:viewportWidth="96"
+    android:viewportHeight="96">
+
+    <!-- Central Vertical Trunk & Branches -->
+    <path
+        android:pathData="M48,72 L48,22"
+        android:strokeColor="#00E5FF"
+        android:strokeWidth="5"
+        android:strokeLineCap="round" />
+
+    <!-- Left Branch -->
+    <path
+        android:pathData="M48,56 C36,56 26,48 26,38 L22,38"
+        android:strokeColor="#00E5FF"
+        android:strokeWidth="5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+
+    <!-- Right Branch -->
+    <path
+        android:pathData="M48,56 C60,56 70,48 70,34 L74,34"
+        android:strokeColor="#00E5FF"
+        android:strokeWidth="5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+
+    <!-- Top Arrowhead -->
+    <path
+        android:pathData="M48,8 L38,22 L58,22 Z"
+        android:fillColor="#00E5FF" />
+
+    <!-- Left Circle Tip -->
+    <path
+        android:pathData="M18,38 A6,6 0 1,1 30,38 A6,6 0 1,1 18,38 Z"
+        android:fillColor="#00E5FF" />
+
+    <!-- Right Square Tip -->
+    <path
+        android:pathData="M70,28 L82,28 L82,40 L70,40 Z"
+        android:fillColor="#00E5FF" />
+
+    <!-- Bottom Base Circle -->
+    <path
+        android:pathData="M41,78 A7,7 0 1,1 55,78 A7,7 0 1,1 41,78 Z"
+        android:fillColor="#00E5FF" />
+
+</vector>
