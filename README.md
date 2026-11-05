@@ -166,6 +166,27 @@ Recommended configuration:
 This helps reduce the likelihood of the operating system terminating USB Nexus during background operation.
 
 The exact settings and menu names may vary depending on the Android manufacturer and OS version.
+📸 Application Screenshots
+
+Explore the USB Nexus interface and its key features.
+
+ Dashboard
+
+<img width="720" height="1600" alt="Dashboard" src="https://github.com/user-attachments/assets/b42691ef-d6ad-468d-a5ec-56b9afbf5c8d" />
+
+
+ Saved USB Device
+
+ <img width="720" height="1600" alt="Saved_USB_device" src="https://github.com/user-attachments/assets/938d7f1f-8f3b-4422-80a0-8ee2cfc0162f" />
+
+
+ USB Connectivity
+
+<img width="720" height="1600" alt="dashboard_with _connected_usb_device" src="https://github.com/user-attachments/assets/ec94c442-4401-4510-b568-f29fc328fe3a" />
+
+ Settings
+
+ <img width="720" height="1600" alt="Settings_section" src="https://github.com/user-attachments/assets/9dba2af2-872a-4439-8bfb-aa1a4a6faa19" />
 
 ---
 
