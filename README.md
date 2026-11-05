@@ -151,6 +151,21 @@ This mechanism is particularly useful on compatible devices that are prone to US
 - Not every USB Type-C audio adapter is guaranteed to work with every Micro-USB smartphone.
 - USB audio functionality depends on the device's hardware, Android implementation, Linux kernel behaviour and connected adapter.
 - USB Nexus cannot add physical USB Host or OTG capabilities to unsupported devices.
+Background Execution & Battery Optimization
+
+USB Audio Keep-Alive relies on background execution to maintain an active USB audio stream.
+
+On Android devices with aggressive background process management, users may need to manually configure the application's battery settings.
+
+Recommended configuration:
+
+- Open Android Settings.
+- Navigate to Apps → USB Nexus → Battery.
+- Select Unrestricted (if available).
+
+This helps reduce the likelihood of the operating system terminating USB Nexus during background operation.
+
+The exact settings and menu names may vary depending on the Android manufacturer and OS version.
 
 ---
 
