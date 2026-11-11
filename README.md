@@ -8,6 +8,25 @@ The application focuses especially on USB Type-C to 3.5 mm audio adapters, allow
 
 USB Nexus also includes an intelligent USB Audio Keep-Alive mechanism designed to help prevent USB DAC suspension on compatible Android devices.
 
+🆕 What's New in USB Nexus v1.6
+
+USB Nexus v1.6 introduces improvements to background execution, notification handling, dashboard permissions and overall usability.
+
+🛠️ Improvements
+
+- Improved USB notification handling using Android component registration.
+- Strengthened "DacKeepAliveService.kt" background-service reliability.
+- Optimized animations and rendering for better performance on Android 10 devices.
+- Fixed display glitches in the Saved USB Information window.
+- Replaced unnecessary emojis with cleaner, professional symbols.
+
+✨ New Features
+
+- Permission Capsule: A dedicated dashboard shortcut for checking notification and battery optimization permissions.
+- Permission Information: Explanatory popups describing why the required permissions are needed.
+- Keep-Alive Notification Action: Start DAC Keep-Alive directly from the USB connection notification.
+- USB-Dependent Service Activation: Keep-Alive service remains inactive when no USB device is connected, reducing unnecessary background activity.
+
 ✨ Features
 
 🎵 1. Intelligent USB Audio Keep-Alive
