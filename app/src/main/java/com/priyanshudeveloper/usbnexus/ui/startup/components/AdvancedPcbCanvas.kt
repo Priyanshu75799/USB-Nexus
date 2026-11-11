@@ -156,9 +156,9 @@ fun AdvancedPcbCanvas(
         // 4. Right Card 1 (Detect USB Host) -> Top-Right SoC Border
         draw45DegreePcbTrace(
             startX = rightCardEdgeX,
-            startY = 26.dp.toPx(),
+            startY = 24.dp.toPx(),
             endX = socBorderRight,
-            endY = socBorderTop + 16.dp.toPx(),
+            endY = socBorderTop + 14.dp.toPx(),
             baseColor = strokeBase,
             activeColor = strokeGlow,
             progress = progress,
@@ -170,9 +170,9 @@ fun AdvancedPcbCanvas(
         // 5. Right Card 2 (Identify Device) -> Bottom-Right SoC Border
         draw45DegreePcbTrace(
             startX = rightCardEdgeX,
-            startY = 66.dp.toPx(),
+            startY = 110.dp.toPx(),
             endX = socBorderRight,
-            endY = socBorderBottom - 16.dp.toPx(),
+            endY = socBorderBottom - 14.dp.toPx(),
             baseColor = strokeBase,
             activeColor = strokeGlow,
             progress = progress,
@@ -215,7 +215,7 @@ fun AdvancedPcbCanvas(
             )
 
             // Silk-screen Text tag
-            val tagResult = textMeasurer.measure("J1: MICRO-USB (5-PIN BUS)", style = silkScreenTextStyle)
+            val tagResult = textMeasurer.measure("J1: MICRO-USB", style = silkScreenTextStyle)
             drawText(
                 textLayoutResult = tagResult,
                 topLeft = Offset(socCenterX - tagResult.size.width / 2f, bottomConnectorY + 20.dp.toPx())
@@ -310,7 +310,7 @@ fun AdvancedPcbCanvas(
             )
 
             // Silk-screen Text Tag
-            val tagResult = textMeasurer.measure("J1: TYPE-C (24-PIN HIGH-SPEED BUS)", style = silkScreenTextStyle)
+            val tagResult = textMeasurer.measure("J1: TYPE-C", style = silkScreenTextStyle)
             drawText(
                 textLayoutResult = tagResult,
                 topLeft = Offset(socCenterX - tagResult.size.width / 2f, bottomConnectorY + 22.dp.toPx())

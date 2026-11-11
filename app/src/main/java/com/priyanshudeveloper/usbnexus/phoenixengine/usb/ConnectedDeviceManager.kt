@@ -29,7 +29,6 @@ class ConnectedDeviceManager(private val context: Context) {
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
     private val usbManager = context.getSystemService(Context.USB_SERVICE) as? UsbManager
-    private val securityNotificationManager = UsbSecurityNotificationManager(context)
 
     private val cache = ConnectedDeviceCache(context)
     private val remoteDataSource = RemoteConnectedDeviceDataSource()
@@ -41,12 +40,7 @@ class ConnectedDeviceManager(private val context: Context) {
         override fun onReceive(context: Context?, intent: Intent?) {
             when (intent?.action) {
                 UsbManager.ACTION_USB_DEVICE_ATTACHED,
-                UsbManager.ACTION_USB_ACCESSORY_ATTACHED -> {
-                    refreshDevices()
-                    _connectedDevices.value.firstOrNull()?.let { dev ->
-                        securityNotificationManager.sendDeviceConnectedNotification(dev.name)
-                    }
-                }
+                UsbManager.ACTION_USB_ACCESSORY_ATTACHED,
                 UsbManager.ACTION_USB_DEVICE_DETACHED,
                 UsbManager.ACTION_USB_ACCESSORY_DETACHED -> {
                     refreshDevices()

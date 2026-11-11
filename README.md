@@ -1,200 +1,88 @@
-USB Nexus 🔌
+# USB Nexus 🔌
 
-USB Connectivity & Audio Adapter Management
+USB Nexus is an Android application built to detect, identify, and monitor connected USB devices and accessories (supporting both Micro-USB and USB Type-C ports).
 
-USB Nexus is an Android application designed primarily to help users connect, manage, identify, and monitor USB devices and accessories on compatible Micro-USB and USB Type-C Android smartphones.
+I created this project to easily inspect connected USB hardware details and keep USB audio DACs active when the screen turns off.
 
-The application focuses especially on USB Type-C to 3.5 mm audio adapters, allowing users with compatible Micro-USB OTG setups to use supported Type-C audio converters.
+## ✨ Features
 
-USB Nexus also includes an intelligent USB Audio Keep-Alive mechanism designed to help prevent USB DAC suspension on compatible Android devices.
+- 🔍 **USB Device Identification:** Instantly scans connected USB peripherals (flash drives, keyboards, mice, audio DACs, controllers) and displays Vendor ID, Product ID, manufacturer, and class descriptors.
+- ⚡ **Micro-USB & Type-C Support:** Supports both Micro-USB 5-pin and USB Type-C 24-pin ports.
+- 🎵 **USB DAC Keep-Alive:** Helps keep connected USB DACs and headphone amplifiers active when the phone screen is locked or turned off (protection from DAC Suspension in some devices especially Micro-USB devices).
+- 🌐 **Network State Monitor:** Displays active network status including USB Ethernet/LAN adapters.
+- 📜 **USB History:** Automatically logs details of connected devices locally for quick reference.
 
-🆕 What's New in USB Nexus v1.6
+## 🛠️ Tech Stack
 
-USB Nexus v1.6 introduces improvements to background execution, notification handling, dashboard permissions and overall usability.
+- **Language:** Kotlin
+- **UI Framework:** Jetpack Compose (Material 3)
+- **Architecture:** MVVM
+- **Storage:** DataStore Preferences & SharedPreferences
+- **Min SDK:** 29 (Android 10) | **Target SDK:** 35 (Android 15)
 
-🛠️ Improvements
+## 🚀 Setup & Running
 
-- Improved USB notification handling using Android component registration.
-- Strengthened "DacKeepAliveService.kt" background-service reliability.
-- Optimized animations and rendering for better performance on Android 10 devices.
-- Fixed display glitches in the Saved USB Information window.
-- Replaced unnecessary emojis with cleaner, professional symbols.
-
-✨ New Features
-
-- Permission Capsule: A dedicated dashboard shortcut for checking notification and battery optimization permissions.
-- Permission Information: Explanatory popups describing why the required permissions are needed.
-- Keep-Alive Notification Action: Start DAC Keep-Alive directly from the USB connection notification.
-- USB-Dependent Service Activation: Keep-Alive service remains inactive when no USB device is connected, reducing unnecessary background activity.
-
-✨ Features
-
-🎵 1. Intelligent USB Audio Keep-Alive
-
-- Helps prevent supported USB audio devices from being suspended by the Android Linux kernel.
-- Continuously monitors media playback activity, including audio and video playback.
-- Automatically disables Keep-Alive when active media playback is detected.
-- Automatically activates when no media playback is detected.
-- Sends a silent audio signal to the connected USB DAC to maintain an active audio stream.
-- Particularly useful for certain Micro-USB devices that experience USB audio suspension.
-
-🔌 2. Micro-USB & USB Type-C Compatibility
-
-- Supports compatible Android devices with Micro-USB and USB Type-C connectors.
-- Allows compatible Micro-USB phones to use supported USB Type-C to 3.5 mm audio adapters through an appropriate Type-C to Micro-USB OTG adapter.
-- Designed to work with different compatible USB audio converters.
-- Helps users use external DAC-based audio output instead of relying on their phone's built-in 3.5 mm audio jack.
-
-🔍 3. USB Device Identification
-
-- Detects and identifies connected USB peripherals.
-- Displays Vendor ID (VID), Product ID (PID), manufacturer information and device class descriptors.
-- Supports inspection of compatible USB peripherals, including:
-  - USB Flash Drives
-  - Keyboards
-  - Mice
-  - USB Audio DACs
-  - Game Controllers
-  - Ethernet Adapters
-
-🌐 4. Network State Monitor
-
-- Displays active network connection status.
-- Monitors available network transport types, including Wi-Fi, Cellular Data and Ethernet.
-- Supports network status visibility when using compatible USB Ethernet adapters.
-
-📜 5. USB Connection History
-
-- Maintains a local history of connected USB devices.
-- Allows users to review previously connected peripherals.
-- Provides an option to remove individual entries from saved history.
-
-⚙️ 6. Device-Specific Configuration
-
-- On the first launch, a Device Configuration dialog asks users to select their phone's physical USB connector type.
-- Separate Micro-USB and USB Type-C modules are activated according to the selected configuration.
-- The startup animation is also configured according to the selected connector type.
-- Includes an interactive PCB-inspired animation with connector-to-SoC trace routing.
-
-🧩 7. Phoenix Engine
-
-USB Nexus uses Phoenix Engine, a dedicated modular backend architecture developed for the application.
-
-- Organizes backend components into a structured folder architecture.
-- Separates Micro-USB and USB Type-C handling modules.
-- Provides a modular foundation for USB detection, management and monitoring.
-- Designed with lightweight and organized backend execution in mind.
-
-🛠️ Technology & Architecture
-
-- Programming Language: Kotlin
-- Frontend: Jetpack Compose and XML-based layouts
-- Backend Architecture: Phoenix Engine
-- Application Architecture: Modular backend design
-- Minimum Android Version: Android 10 (API 29)
-- Target SDK: 35 (Android 15)
-
-🔐 Lightweight & Privacy-Conscious Design
-
-- Designed for a small background memory footprint.
-- Does not request storage permission.
-- Does not request overlay permission.
-- Avoids unnecessary access to storage and screen overlays.
-- Designed to perform its USB-related tasks without requiring unnecessary permissions.
-
-🚀 Setup & Running
-
-1. Clone or download this repository.
+1. Clone this repository:
 2. Open the project in Android Studio.
-3. Connect a compatible Android device with USB OTG support.
-4. Build and install the application using Android Studio.
+3. Connect an Android device with OTG support or use an emulator.
+4. Click Run 'app' (Shift + F10) to build and install.
 
-📖 Complete User Manual
+## 👨‍💻 Author
 
-1. First Launch & USB Port Selection
-
-When USB Nexus is launched for the first time:
-
-1. A Device Configuration dialog appears.
-2. Select Micro-USB if your phone uses a Micro-USB connector.
-3. Select USB Type-C if your phone uses a USB Type-C connector.
-4. The application activates the corresponding device-specific modules and startup animation.
-
-2. Dashboard & USB Device Inspection
-
-- Open the Dashboard to view your device information and USB connection status.
-- Connect a USB peripheral using a compatible OTG adapter or cable.
-- USB Nexus detects and displays supported connected peripherals.
-- Select a device card to inspect its available hardware information.
-
-Depending on the connected device, available information may include:
-
-- Vendor ID and Product ID
-- Device Path and Class
-- Manufacturer Information
-- USB Interfaces and Endpoint Descriptors
-- Power and Bandwidth Configurations
-- Audio Sampling Rates and Resolution (for supported USB audio devices)
-
-3. USB Audio Keep-Alive
-
-The Keep-Alive mechanism is designed to maintain an active USB audio stream when no media is playing.
-
-How it works:
-
-1. USB Nexus monitors media playback activity.
-2. When audio or video playback is detected, Keep-Alive automatically becomes inactive.
-3. When media playback stops, Keep-Alive automatically becomes active.
-4. A silent audio signal is sent to the connected USB DAC to help maintain its active audio stream.
-
-This mechanism is particularly useful on compatible devices that are prone to USB audio suspension.
-
-4. Network & Ethernet Monitoring
-
-- Connect a compatible USB Ethernet adapter through OTG.
-- Open the Network State Monitor.
-- View the available network transport status, including Ethernet, Wi-Fi and Cellular Data.
-
-5. Saved USB Device History
-
-- Open Saved History to review previously connected USB devices.
-- View locally saved device information.
-- Use the delete option to remove individual history entries.
-
-⚠️ Compatibility & Important Notes
-
-- Requires Android 10 or later.
-- Includes compatibility work for newer Android versions, including Android 14 APIs.
-- Requires compatible USB Host/OTG hardware.
-- Appropriate OTG adapters and compatible USB peripherals are necessary.
-- Not every USB Type-C audio adapter is guaranteed to work with every Micro-USB smartphone.
-- USB audio functionality depends on the device's hardware, Android implementation, Linux kernel behaviour and connected adapter.
-- USB Nexus cannot add physical USB Host or OTG capabilities to unsupported devices.
-Background Execution & Battery Optimization
-
-USB Audio Keep-Alive relies on background execution to maintain an active USB audio stream.
-
-On Android devices with aggressive background process management, users may need to manually configure the application's battery settings.
-
-Recommended configuration:
-
-- Open Android Settings.
-- Navigate to Apps → USB Nexus → Battery.
-- Select Unrestricted (if available).
-
-This helps reduce the likelihood of the operating system terminating USB Nexus during background operation.
-
-The exact settings and menu names may vary depending on the Android manufacturer and OS version.
-📸 Application Screenshots in main code.
+Created by **Priyanshu Rajput**  
+Feel free to star ⭐ this repository if you find it helpful!
 
 ---
 
-👨‍💻 Author
+## 📖 Complete User Manual
 
-Priyanshu Rajput
+Welcome to **USB Nexus**! This user manual explains how to use all the features of the app step by step.
 
-Developer of USB Nexus and the Phoenix Engine architecture.
+---
 
-USB Nexus | Connect. Manage. Monitor. 🔌
+### 1. 🚀 Startup & USB Port Selection
+- **First Launch:** When you open USB Nexus for the first time, a **Device Configuration** dialog will pop up asking for your device's physical USB port type.
+- **Micro-USB (5-Pin):** Select this option if your device uses a traditional Micro-USB connector.
+- **Type-C (24-Pin):** Select this option if your device uses a modern USB Type-C connector.
+- **PCB Trace Animation:** Once selected, the interactive hardware board visualizes 45-degree PCB trace routing animations from the connector pins to the central System-on-Chip (SoC).
 
-If you find this project useful, consider giving the repository a ⭐ star!
+---
+
+### 2. 📱 Dashboard & USB Device Inspection
+- **Universal Device Identification Area:** Displays your phone's model and active USB host hardware state.
+- **Connecting a USB Device:** Attach any OTG peripheral (USB flash drive, mouse, keyboard, USB DAC, ethernet adapter, or game controller) using an OTG adapter/cable.
+- **Real-Time Scanning:** The Dashboard automatically updates to display connected USB peripherals along with their **Vendor ID**, **Product ID**, **Device Class**, and **Manufacturer Name**.
+- **Detailed Specifications Dialog:** Tap on any connected device card to open a full low-level specification report, including:
+  - Device Path & Class Description
+  - USB Interfaces & Endpoint Descriptors
+  - Power & Bandwidth Configurations
+  - Audio Sampling Rates & Resolution (for USB DACs)
+- **Copy Specifications:** Tap the **Copy All Specifications to Clipboard** button inside the detail dialog to quickly export hardware details.
+
+---
+
+### 3. 🎵 USB DAC Keep-Alive Feature
+- **What it does:** Some Android smartphones automatically suspend or cut power to connected USB Audio DACs / headphone amplifiers when the screen turns off or locks, causing audio stutters or disconnects.
+- **How to Enable:**
+  1. Open **Settings** or toggle the **DAC Anti-Suspend / Keep-Alive** switch in the Dashboard.
+  2. When active and a USB DAC is connected, USB Nexus streams an imperceptible 0dB silent audio signal directly down the USB DAC audio stream whenever the screen is turned off and no media is playing.
+  3. This keeps the USB DAC power rail continuously active without consuming extra battery while playing music.
+
+---
+
+### 4. 🌐 Network & Ethernet Adapter State
+- **USB Ethernet Monitoring:** Connect a USB-to-Ethernet (LAN) adapter to your phone via OTG.
+- **Real-Time Status:** The Dashboard displays active network transport types (**Ethernet (LAN / USB Adapter)**, **Wi-Fi**, or **Cellular Mobile Data**).
+
+---
+
+### 5. 📜 Saved USB Device History
+- **Automatic History Logging:** USB Nexus locally records details of all USB hardware ever connected to your device.
+- **Accessing History:** Tap the **Saved History** button or navigate via Settings to view past USB connections.
+- **Deleting Entries:** Tap the delete icon on any saved device entry to remove it from local history logs.
+
+---
+
+### 💡 Troubleshooting & Tips
+- **Device Not Detected:** Ensure USB OTG is enabled in your Android phone's system settings (on some devices like Vivo, OPPO, OnePlus, OTG needs to be manually toggled ON in System Settings -> More Connections -> OTG).
+- **USB Permission Prompt:** When connecting a new USB device, grant Android system USB permission when prompted so USB Nexus can read low-level hardware descriptors.

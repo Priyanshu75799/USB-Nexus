@@ -4,6 +4,9 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.priyanshudeveloper.usbnexus.phoenixengine.domain.model.ConnectedDevice
 import com.priyanshudeveloper.usbnexus.phoenixengine.domain.model.ConnectionType
+import com.priyanshudeveloper.usbnexus.phoenixengine.domain.model.UsbConfigurationDescriptor
+import com.priyanshudeveloper.usbnexus.phoenixengine.domain.model.UsbEndpointDescriptor
+import com.priyanshudeveloper.usbnexus.phoenixengine.domain.model.UsbInterfaceDescriptor
 import com.priyanshudeveloper.usbnexus.phoenixengine.domain.model.UsbLowLevelDescriptor
 import com.priyanshudeveloper.usbnexus.phoenixengine.domain.model.VerifiedDeviceDetails
 import org.json.JSONArray
@@ -186,6 +189,46 @@ class ConnectedDeviceCache(context: Context) {
     }
 
     private fun serializeLowLevel(lowLevel: UsbLowLevelDescriptor): JSONObject {
+        val interfacesArray = JSONArray()
+        lowLevel.interfaces.forEach { iface ->
+            val endpointsArray = JSONArray()
+            iface.endpoints.forEach { ep ->
+                val epObj = JSONObject().apply {
+                    put("number", ep.number)
+                    put("addressHex", ep.addressHex)
+                    put("direction", ep.direction)
+                    put("type", ep.type)
+                    put("interval", ep.interval)
+                    put("maxPacketSize", ep.maxPacketSize)
+                    put("attributesHex", ep.attributesHex)
+                }
+                endpointsArray.put(epObj)
+            }
+
+            val ifaceObj = JSONObject().apply {
+                put("id", iface.id)
+                put("name", iface.name ?: JSONObject.NULL)
+                put("alternateSetting", iface.alternateSetting)
+                put("classDescription", iface.classDescription)
+                put("subclassDescription", iface.subclassDescription)
+                put("protocolDescription", iface.protocolDescription)
+                put("endpoints", endpointsArray)
+            }
+            interfacesArray.put(ifaceObj)
+        }
+
+        val configsArray = JSONArray()
+        lowLevel.configurations.forEach { cfg ->
+            val cfgObj = JSONObject().apply {
+                put("id", cfg.id)
+                put("name", cfg.name ?: JSONObject.NULL)
+                put("isSelfPowered", cfg.isSelfPowered)
+                put("isRemoteWakeup", cfg.isRemoteWakeup)
+                put("maxPowerMa", cfg.maxPowerMa)
+            }
+            configsArray.put(cfgObj)
+        }
+
         return JSONObject().apply {
             put("devicePath", lowLevel.devicePath)
             put("deviceClassText", lowLevel.deviceClassText)
@@ -195,10 +238,70 @@ class ConnectedDeviceCache(context: Context) {
             put("productIdHex", lowLevel.productIdHex)
             put("productNameReported", lowLevel.productNameReported)
             put("productNameDb", lowLevel.productNameDb)
+            put("interfaces", interfacesArray)
+            put("configurations", configsArray)
         }
     }
 
     private fun deserializeLowLevel(json: JSONObject): UsbLowLevelDescriptor {
+        val interfacesList = mutableListOf<UsbInterfaceDescriptor>()
+        val interfacesArray = json.optJSONArray("interfaces")
+        if (interfacesArray != null) {
+            for (i in 0 until interfacesArray.length()) {
+                val ifaceObj = interfacesArray.optJSONObject(i) ?: continue
+                val endpointsList = mutableListOf<UsbEndpointDescriptor>()
+                val endpointsArray = ifaceObj.optJSONArray("endpoints")
+                if (endpointsArray != null) {
+                    for (j in 0 until endpointsArray.length()) {
+                        val epObj = endpointsArray.optJSONObject(j) ?: continue
+                        endpointsList.add(
+                            UsbEndpointDescriptor(
+                                number = epObj.optInt("number", 0),
+                                addressHex = epObj.optString("addressHex", "0x00"),
+                                direction = epObj.optString("direction", "Unknown"),
+                                type = epObj.optString("type", "Bulk"),
+                                interval = epObj.optInt("interval", 0),
+                                maxPacketSize = epObj.optInt("maxPacketSize", 0),
+                                attributesHex = epObj.optString("attributesHex", "0x00")
+                            )
+                        )
+                    }
+                }
+
+                val ifaceName = if (ifaceObj.isNull("name")) null else ifaceObj.optString("name")
+
+                interfacesList.add(
+                    UsbInterfaceDescriptor(
+                        id = ifaceObj.optInt("id", 0),
+                        name = ifaceName,
+                        alternateSetting = ifaceObj.optInt("alternateSetting", 0),
+                        classDescription = ifaceObj.optString("classDescription", "Unknown Class"),
+                        subclassDescription = ifaceObj.optString("subclassDescription", "Unknown Subclass"),
+                        protocolDescription = ifaceObj.optString("protocolDescription", "Unknown Protocol"),
+                        endpoints = endpointsList
+                    )
+                )
+            }
+        }
+
+        val configsList = mutableListOf<UsbConfigurationDescriptor>()
+        val configsArray = json.optJSONArray("configurations")
+        if (configsArray != null) {
+            for (i in 0 until configsArray.length()) {
+                val cfgObj = configsArray.optJSONObject(i) ?: continue
+                val cfgName = if (cfgObj.isNull("name")) null else cfgObj.optString("name")
+                configsList.add(
+                    UsbConfigurationDescriptor(
+                        id = cfgObj.optInt("id", 1),
+                        name = cfgName,
+                        isSelfPowered = cfgObj.optBoolean("isSelfPowered", false),
+                        isRemoteWakeup = cfgObj.optBoolean("isRemoteWakeup", false),
+                        maxPowerMa = cfgObj.optInt("maxPowerMa", 500)
+                    )
+                )
+            }
+        }
+
         return UsbLowLevelDescriptor(
             devicePath = json.optString("devicePath", "/dev/bus/usb/001"),
             deviceClassText = json.optString("deviceClassText", "Interface Class"),
@@ -208,8 +311,8 @@ class ConnectedDeviceCache(context: Context) {
             productIdHex = json.optString("productIdHex", "0x0000"),
             productNameReported = json.optString("productNameReported", "Product"),
             productNameDb = json.optString("productNameDb", "Product DB"),
-            interfaces = emptyList(),
-            configurations = emptyList()
+            interfaces = interfacesList,
+            configurations = configsList
         )
     }
 }

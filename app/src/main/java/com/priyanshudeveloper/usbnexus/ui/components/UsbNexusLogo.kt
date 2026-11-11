@@ -66,7 +66,7 @@ fun UsbNexusLogo(
                 fontFamily = FontFamily.Monospace
             )
             Text(
-                text = "USB HARDWARE IDENTIFIER & SECURITY MONITOR ENGINE",
+                text = "USB Hardware Identifier & Security Monitor Engine",
                 color = TextSecondary,
                 fontSize = 11.sp,
                 fontWeight = FontWeight.Medium,

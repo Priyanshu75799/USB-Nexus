@@ -38,7 +38,6 @@ import com.priyanshudeveloper.usbnexus.phoenixengine.viewmodel.StartupViewModel
 import com.priyanshudeveloper.usbnexus.ui.components.UsbNexusLogo
 import com.priyanshudeveloper.usbnexus.ui.startup.components.AdvancedPcbCanvas
 import com.priyanshudeveloper.usbnexus.ui.startup.components.ModuleStatus
-import com.priyanshudeveloper.usbnexus.ui.startup.components.ResultBadge
 import com.priyanshudeveloper.usbnexus.ui.startup.components.SocChipView
 import com.priyanshudeveloper.usbnexus.ui.startup.components.UsbHardwareIdentifierAndSecurityMonitorModuleCard
 import com.priyanshudeveloper.usbnexus.ui.theme.ElectricCyan
@@ -265,8 +264,8 @@ fun StartupScreen(
                                 horizontalArrangement = Arrangement.spacedBy(12.dp)
                             ) {
                                 Text(
-                                    text = "🔌",
-                                    fontSize = 24.sp
+                                    text = "⇒",
+                                    fontSize = 20.sp
                                 )
                                 Column(modifier = Modifier.weight(1f)) {
                                     Text(
@@ -301,7 +300,7 @@ fun StartupScreen(
                                 horizontalArrangement = Arrangement.spacedBy(12.dp)
                             ) {
                                 Text(
-                                    text = "⚡",
+                                    text = "⇒",
                                     fontSize = 24.sp
                                 )
                                 Column(modifier = Modifier.weight(1f)) {
@@ -322,22 +321,6 @@ fun StartupScreen(
                     }
                 }
             }
-        }
-
-        // Final Result Badge Overlay
-        AnimatedVisibility(
-            visible = state.stage == StartupStage.SHOWING_RESULT,
-            enter = fadeIn(),
-            exit = fadeOut()
-        ) {
-            ResultBadge(
-                isSuccess = state.isIdentificationSuccess,
-                isPortUnknown = state.isPortUnknownButDeviceFound,
-                deviceProfile = state.deviceProfile,
-                manufacturer = state.manufacturer,
-                model = state.model,
-                portType = state.portType
-            )
         }
     }
 }

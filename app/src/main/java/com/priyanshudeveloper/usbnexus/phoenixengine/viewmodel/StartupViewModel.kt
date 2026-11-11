@@ -118,11 +118,8 @@ class StartupViewModel(
             _uiState.update { it.copy(animationProgress = progress) }
         }
 
-        // STEP 5: SHOWING_RESULT
-        _uiState.update { it.copy(stage = StartupStage.SHOWING_RESULT) }
-        delay(1500)
-
-        // STEP 6: COMPLETED
+        // Directly transition to COMPLETED (Dashboard) after animation finishes
+        delay(100)
         _uiState.update { it.copy(stage = StartupStage.COMPLETED) }
     }
 }

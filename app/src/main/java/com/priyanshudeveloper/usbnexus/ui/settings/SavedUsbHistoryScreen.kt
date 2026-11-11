@@ -30,6 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
@@ -40,8 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.priyanshudeveloper.usbnexus.phoenixengine.data.local.ConnectedDeviceCache
 import com.priyanshudeveloper.usbnexus.phoenixengine.domain.model.ConnectedDevice
-import com.priyanshudeveloper.usbnexus.phoenixengine.usb.UsbHardwareCommunicator
-import com.priyanshudeveloper.usbnexus.ui.dashboard.components.ConnectedDeviceDetailDialog
+import com.priyanshudeveloper.usbnexus.phoenixengine.usb.SavedUsbDeviceDetailDialog
 import com.priyanshudeveloper.usbnexus.ui.theme.CardBorder
 import com.priyanshudeveloper.usbnexus.ui.theme.DarkBackground
 import com.priyanshudeveloper.usbnexus.ui.theme.DarkSurface
@@ -61,7 +61,6 @@ fun SavedUsbHistoryScreen(
 ) {
     val context = LocalContext.current
     val deviceCache = remember { ConnectedDeviceCache(context) }
-    val usbHardwareCommunicator = remember { UsbHardwareCommunicator(context) }
 
     var savedDevices by remember { mutableStateOf(deviceCache.getSavedUsbDevices()) }
     var selectedDeviceForDetail by remember { mutableStateOf<ConnectedDevice?>(null) }
@@ -85,7 +84,7 @@ fun SavedUsbHistoryScreen(
                 .padding(horizontal = 16.dp, vertical = 12.dp)
                 .verticalScroll(rememberScrollState())
         ) {
-            // Header Row with BACK Button on Top-Left
+            // Header Row with BACK Capsule Button on Top-Left
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -94,10 +93,11 @@ fun SavedUsbHistoryScreen(
             ) {
                 Box(
                     modifier = Modifier
-                        .background(DarkSurfaceVariant, RoundedCornerShape(8.dp))
-                        .border(1.dp, CardBorder, RoundedCornerShape(8.dp))
+                        .clip(RoundedCornerShape(50.dp))
+                        .background(DarkSurfaceVariant)
+                        .border(1.dp, CardBorder, RoundedCornerShape(50.dp))
                         .clickable { onNavigateBack() }
-                        .padding(horizontal = 12.dp, vertical = 6.dp)
+                        .padding(horizontal = 14.dp, vertical = 7.dp)
                 ) {
                     Text(
                         text = "BACK",
@@ -109,7 +109,7 @@ fun SavedUsbHistoryScreen(
                 }
 
                 Text(
-                    text = "SAVED USB DEVICE HISTORY",
+                    text = "Saved USB Device History",
                     color = TextPrimary,
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Bold,
@@ -138,7 +138,7 @@ fun SavedUsbHistoryScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "RECORDED USB LOGS (${savedDevices.size})",
+                            text = "Recorded USB Logs (${savedDevices.size})",
                             color = TechBlue,
                             fontSize = 11.sp,
                             fontWeight = FontWeight.Bold,
@@ -147,12 +147,12 @@ fun SavedUsbHistoryScreen(
                         )
                         Box(
                             modifier = Modifier
-                                .background(ElectricCyan.copy(alpha = 0.15f), RoundedCornerShape(12.dp))
-                                .border(1.dp, ElectricCyan.copy(alpha = 0.5f), RoundedCornerShape(12.dp))
-                                .padding(horizontal = 8.dp, vertical = 3.dp)
+                                .background(ElectricCyan.copy(alpha = 0.15f), RoundedCornerShape(50.dp))
+                                .border(1.dp, ElectricCyan.copy(alpha = 0.5f), RoundedCornerShape(50.dp))
+                                .padding(horizontal = 10.dp, vertical = 4.dp)
                         ) {
                             Text(
-                                text = "SAVED SPECS",
+                                text = "Saved Specs",
                                 color = ElectricCyan,
                                 fontSize = 9.sp,
                                 fontWeight = FontWeight.Bold,
@@ -190,18 +190,14 @@ fun SavedUsbHistoryScreen(
                                         .combinedClickable(
                                             onClick = {
                                                 if (isDeleteButtonVisible) {
-                                                    // Unselect / Cancel delete mode when tapped again
                                                     devicePendingDeleteSet = devicePendingDeleteSet - dev.id
                                                 } else if (devicePendingDeleteSet.isNotEmpty()) {
-                                                    // Unselect all if another card was selected
                                                     devicePendingDeleteSet = emptySet()
                                                 } else {
-                                                    // Open specs window in normal state only
                                                     selectedDeviceForDetail = dev
                                                 }
                                             },
                                             onLongClick = {
-                                                // Long-press (3 seconds) triggers Red Delete Button & selects for deletion
                                                 devicePendingDeleteSet = devicePendingDeleteSet + dev.id
                                             }
                                         )
@@ -238,14 +234,14 @@ fun SavedUsbHistoryScreen(
                                                     )
                                                     Spacer(modifier = Modifier.width(6.dp))
                                                     Text(
-                                                        text = "LOGGED ✓",
+                                                        text = "Logged ✓",
                                                         color = StatusSuccessGreen,
                                                         fontSize = 9.sp,
                                                         fontWeight = FontWeight.Bold,
                                                         fontFamily = FontFamily.Monospace,
                                                         modifier = Modifier
-                                                            .background(StatusSuccessGreen.copy(alpha = 0.15f), RoundedCornerShape(4.dp))
-                                                            .padding(horizontal = 4.dp, vertical = 1.dp)
+                                                            .background(StatusSuccessGreen.copy(alpha = 0.15f), RoundedCornerShape(50.dp))
+                                                            .padding(horizontal = 6.dp, vertical = 2.dp)
                                                     )
                                                 }
                                                 Text(
@@ -254,7 +250,7 @@ fun SavedUsbHistoryScreen(
                                                     fontSize = 11.sp
                                                 )
                                                 Text(
-                                                    text = if (isDeleteButtonVisible) "Tap red trash button to delete entry" else "Tap for detailed specs | Long-press (3s) to delete ›",
+                                                    text = if (isDeleteButtonVisible) "Tap red trash button to delete entry" else "Tap for detailed specs | Long-press to delete ›",
                                                     color = if (isDeleteButtonVisible) StatusErrorRed else ElectricCyan,
                                                     fontSize = 10.sp,
                                                     fontFamily = FontFamily.Monospace
@@ -262,24 +258,24 @@ fun SavedUsbHistoryScreen(
                                             }
                                         }
 
-                                        // Red Delete Button in Top-Right Corner upon 3-second long press
                                         if (isDeleteButtonVisible) {
                                             Spacer(modifier = Modifier.width(8.dp))
                                             Box(
                                                 modifier = Modifier
-                                                    .background(StatusErrorRed, RoundedCornerShape(6.dp))
-                                                    .border(1.dp, StatusErrorRed, RoundedCornerShape(6.dp))
+                                                    .clip(RoundedCornerShape(50.dp))
+                                                    .background(StatusErrorRed)
+                                                    .border(1.dp, StatusErrorRed, RoundedCornerShape(50.dp))
                                                     .clickable {
                                                         deviceCache.removeDeviceFromHistory(dev.id)
                                                         savedDevices = deviceCache.getSavedUsbDevices()
                                                         devicePendingDeleteSet = devicePendingDeleteSet - dev.id
                                                         Toast.makeText(context, "Deleted '${dev.name}' from history 🗑️", Toast.LENGTH_SHORT).show()
                                                     }
-                                                    .padding(horizontal = 10.dp, vertical = 6.dp),
+                                                    .padding(horizontal = 12.dp, vertical = 6.dp),
                                                 contentAlignment = Alignment.Center
                                             ) {
                                                 Text(
-                                                    text = "🗑DELETE",
+                                                    text = "🗑 Delete",
                                                     color = Color.White,
                                                     fontSize = 10.sp,
                                                     fontWeight = FontWeight.Bold,
@@ -296,12 +292,9 @@ fun SavedUsbHistoryScreen(
             }
         }
 
-        // Detailed hardware spec pop-up window (Same as Homepage, without hardware permission/DAC toggle)
         selectedDeviceForDetail?.let { device ->
-            ConnectedDeviceDetailDialog(
+            SavedUsbDeviceDetailDialog(
                 device = device,
-                usbHardwareCommunicator = usbHardwareCommunicator,
-                showHardwareControls = false,
                 onDismiss = { selectedDeviceForDetail = null }
             )
         }

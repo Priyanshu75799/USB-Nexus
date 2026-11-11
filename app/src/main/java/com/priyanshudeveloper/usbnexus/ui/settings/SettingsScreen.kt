@@ -32,6 +32,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -88,7 +89,7 @@ fun SettingsScreen(
                 .padding(horizontal = 16.dp, vertical = 12.dp)
                 .verticalScroll(rememberScrollState())
         ) {
-            // Header Row with Back Button & Centered Title
+            // Header Row with BACK Capsule Button & Centered Title
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -97,10 +98,11 @@ fun SettingsScreen(
             ) {
                 Box(
                     modifier = Modifier
-                        .background(DarkSurfaceVariant, RoundedCornerShape(8.dp))
-                        .border(1.dp, CardBorder, RoundedCornerShape(8.dp))
+                        .clip(RoundedCornerShape(50.dp))
+                        .background(DarkSurfaceVariant)
+                        .border(1.dp, CardBorder, RoundedCornerShape(50.dp))
                         .clickable { onNavigateBack() }
-                        .padding(horizontal = 12.dp, vertical = 6.dp)
+                        .padding(horizontal = 14.dp, vertical = 7.dp)
                 ) {
                     Text(
                         text = "BACK",
@@ -112,7 +114,7 @@ fun SettingsScreen(
                 }
 
                 Text(
-                    text = "SETTINGS",
+                    text = "Settings",
                     color = TextPrimary,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
@@ -127,12 +129,16 @@ fun SettingsScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // 1. UNIVERSAL USB DAC ANTI-DISCONNECT
+            // 1. UNIVERSAL USB DAC ANTI-SUSPEND
+            val cardBorderColor = if (isUsbDeviceConnected) TechBlue.copy(alpha = 0.6f) else CardBorder.copy(alpha = 0.35f)
+            val cardBgColor = if (isUsbDeviceConnected) DarkSurface else DarkSurface.copy(alpha = 0.5f)
+            val titleColor = if (isUsbDeviceConnected) ElectricCyan else TextDim
+
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .border(1.dp, TechBlue.copy(alpha = 0.6f), RoundedCornerShape(12.dp)),
-                colors = CardDefaults.cardColors(containerColor = DarkSurface),
+                    .border(1.dp, cardBorderColor, RoundedCornerShape(12.dp)),
+                colors = CardDefaults.cardColors(containerColor = cardBgColor),
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
@@ -144,38 +150,38 @@ fun SettingsScreen(
                         Column(modifier = Modifier.weight(1f)) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(
-                                    text = "⚡ UNIVERSAL USB DAC\n   ANTI-DISCONNECT",
-                                    color = ElectricCyan,
+                                    text = "Universal USB DAC\nAnti-Suspend",
+                                    color = titleColor,
                                     fontSize = 12.sp,
                                     fontWeight = FontWeight.Bold,
                                     fontFamily = FontFamily.Monospace
                                 )
                                 Spacer(modifier = Modifier.width(6.dp))
                                 Text(
-                                    text = if (isDacKeepAliveActive && isUsbDeviceConnected) {
-                                        "ACTIVE ✓"
+                                    text = if (!isUsbDeviceConnected) {
+                                        "No USB Connected"
                                     } else if (isDacKeepAliveActive) {
-                                        "READY"
+                                        "Active ✓"
                                     } else {
-                                        "OFF"
+                                        "Off"
                                     },
-                                    color = if (isDacKeepAliveActive && isUsbDeviceConnected) StatusSuccessGreen else if (isDacKeepAliveActive) TechBlue else TextDim,
+                                    color = if (!isUsbDeviceConnected) TextDim else if (isDacKeepAliveActive) StatusSuccessGreen else TechBlue,
                                     fontSize = 9.sp,
                                     fontWeight = FontWeight.Bold,
                                     fontFamily = FontFamily.Monospace,
                                     modifier = Modifier
                                         .background(
                                             if (isDacKeepAliveActive && isUsbDeviceConnected) StatusSuccessGreen.copy(alpha = 0.15f) else DarkSurfaceVariant,
-                                            RoundedCornerShape(4.dp)
+                                            RoundedCornerShape(50.dp)
                                         )
-                                        .padding(horizontal = 4.dp, vertical = 1.dp)
+                                        .padding(horizontal = 6.dp, vertical = 2.dp)
                                 )
                             }
                         }
                         Spacer(modifier = Modifier.width(8.dp))
                         Switch(
-                            checked = isDacKeepAliveActive,
-                            enabled = true,
+                            checked = isDacKeepAliveActive && isUsbDeviceConnected,
+                            enabled = isUsbDeviceConnected,
                             onCheckedChange = { enabled ->
                                 coroutineScope.launch {
                                     dataStore.setDacKeepAliveEnabled(enabled)
@@ -190,7 +196,11 @@ fun SettingsScreen(
                                 checkedThumbColor = DarkBackground,
                                 checkedTrackColor = ElectricCyan,
                                 uncheckedThumbColor = TextDim,
-                                uncheckedTrackColor = DarkSurfaceVariant
+                                uncheckedTrackColor = DarkSurfaceVariant,
+                                disabledCheckedThumbColor = TextDim,
+                                disabledCheckedTrackColor = DarkSurfaceVariant.copy(alpha = 0.4f),
+                                disabledUncheckedThumbColor = TextDim.copy(alpha = 0.4f),
+                                disabledUncheckedTrackColor = DarkSurfaceVariant.copy(alpha = 0.2f)
                             )
                         )
                     }
@@ -201,7 +211,7 @@ fun SettingsScreen(
 
                     Text(
                         text = "Detailed Feature Description:",
-                        color = TechBlue,
+                        color = if (isUsbDeviceConnected) TechBlue else TextDim,
                         fontSize = 11.sp,
                         fontWeight = FontWeight.Bold,
                         fontFamily = FontFamily.Monospace
@@ -210,8 +220,12 @@ fun SettingsScreen(
                     Spacer(modifier = Modifier.height(4.dp))
 
                     Text(
-                        text = "Keeps high-resolution Type-C USB DACs, amplifiers, and audio adapters active when your phone screen is locked or music is paused. By transmitting a silent 0dB signal, it prevents the Linux OTG kernel from suspending USB power rails, eliminating audio pops and disconnects.",
-                        color = TextSecondary,
+                        text = if (isUsbDeviceConnected) {
+                            "Keeps high-resolution Type-C USB DACs, amplifiers, and audio adapters active when your phone screen is locked or music is paused. By transmitting a silent 0dB signal, it prevents the Linux OTG kernel from suspending USB power rails, eliminating audio pops and disconnects."
+                        } else {
+                            "Feature is currently standby/greyed out because no USB OTG peripheral or DAC is connected. Connect a USB device to enable this service."
+                        },
+                        color = if (isUsbDeviceConnected) TextSecondary else TextDim,
                         fontSize = 11.sp,
                         fontFamily = FontFamily.Monospace,
                         lineHeight = 16.sp
@@ -238,7 +252,7 @@ fun SettingsScreen(
                         Column(modifier = Modifier.weight(1f)) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(
-                                    text = "💾 SAVING INFORMATION OF\n   CONNECTED USB DEVICES",
+                                    text = "Saving Information Of\nConnected USB Devices",
                                     color = ElectricCyan,
                                     fontSize = 12.sp,
                                     fontWeight = FontWeight.Bold,
@@ -246,7 +260,7 @@ fun SettingsScreen(
                                 )
                                 Spacer(modifier = Modifier.width(6.dp))
                                 Text(
-                                    text = if (isSaveUsbInfoEnabled) "ACTIVE ✓" else "OFF",
+                                    text = if (isSaveUsbInfoEnabled) "Active" else "Off",
                                     color = if (isSaveUsbInfoEnabled) StatusSuccessGreen else TextDim,
                                     fontSize = 9.sp,
                                     fontWeight = FontWeight.Bold,
@@ -254,9 +268,9 @@ fun SettingsScreen(
                                     modifier = Modifier
                                         .background(
                                             if (isSaveUsbInfoEnabled) StatusSuccessGreen.copy(alpha = 0.15f) else DarkSurfaceVariant,
-                                            RoundedCornerShape(4.dp)
+                                            RoundedCornerShape(50.dp)
                                         )
-                                        .padding(horizontal = 4.dp, vertical = 1.dp)
+                                        .padding(horizontal = 6.dp, vertical = 2.dp)
                                 )
                             }
                         }
@@ -300,7 +314,6 @@ fun SettingsScreen(
                         lineHeight = 16.sp
                     )
 
-                    // Button appears below block ONLY when sliding switch is ON!
                     if (isSaveUsbInfoEnabled) {
                         Spacer(modifier = Modifier.height(14.dp))
                         Button(
@@ -309,10 +322,10 @@ fun SettingsScreen(
                                 .fillMaxWidth()
                                 .height(42.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = ElectricCyan),
-                            shape = RoundedCornerShape(8.dp)
+                            shape = RoundedCornerShape(50.dp)
                         ) {
                             Text(
-                                text = "📂 VIEW SAVED USB LOGS & HISTORY",
+                                text = "View Saved USB Logs & History",
                                 color = DarkBackground,
                                 fontSize = 11.sp,
                                 fontWeight = FontWeight.Bold,
