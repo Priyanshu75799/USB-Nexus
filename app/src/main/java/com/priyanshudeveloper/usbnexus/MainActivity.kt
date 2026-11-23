@@ -14,11 +14,14 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.lifecycleScope
+import com.priyanshudeveloper.usbnexus.phoenixengine.usb.AppUpdateChecker
 import com.priyanshudeveloper.usbnexus.phoenixengine.usb.UsbHardwareCommunicator
 import com.priyanshudeveloper.usbnexus.phoenixengine.viewmodel.StartupViewModel
 import com.priyanshudeveloper.usbnexus.ui.navigation.UsbNexusNavigation
 import com.priyanshudeveloper.usbnexus.ui.theme.DarkBackground
 import com.priyanshudeveloper.usbnexus.ui.theme.USBNexusTheme
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
 
@@ -28,6 +31,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         handleIncomingUsbIntent(intent)
+        lifecycleScope.launch {
+            AppUpdateChecker.checkForUpdates(applicationContext)
+        }
         setContent {
             USBNexusTheme {
                 UsbNexusApp(viewModel = startupViewModel)

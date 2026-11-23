@@ -21,11 +21,15 @@ class DacKeepAliveNotificationReceiver : BroadcastReceiver() {
                 notificationManager?.cancel(notificationId)
             }
 
-            DacKeepAliveService.startService(context)
-
             val dataStore = UsbNexusDataStore(context)
+            val pendingResult = goAsync()
             CoroutineScope(Dispatchers.IO).launch {
-                dataStore.setDacKeepAliveEnabled(true)
+                try {
+                    dataStore.setDacKeepAliveEnabled(true)
+                    DacKeepAliveService.startService(context)
+                } finally {
+                    pendingResult.finish()
+                }
             }
         }
     }

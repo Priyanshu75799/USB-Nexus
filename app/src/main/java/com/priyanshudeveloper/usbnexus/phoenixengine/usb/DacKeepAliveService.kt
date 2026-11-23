@@ -5,7 +5,6 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.hardware.usb.UsbConstants
 import android.hardware.usb.UsbManager
 import android.media.AudioAttributes
 import android.media.AudioDeviceInfo
@@ -34,14 +33,21 @@ class DacKeepAliveService : Service() {
     private lateinit var dataStore: UsbNexusDataStore
 
     private var audioTrack: AudioTrack? = null
+    private var wakeLock: PowerManager.WakeLock? = null
     private var isReceiverRegistered = false
 
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             when (intent?.action) {
                 Intent.ACTION_SCREEN_OFF -> checkAndManageKeepAlive()
-                Intent.ACTION_SCREEN_ON -> stopSilentAudioKeepAlive()
-                UsbManager.ACTION_USB_DEVICE_DETACHED -> stopSilentAudioKeepAlive()
+                Intent.ACTION_SCREEN_ON -> checkAndManageKeepAlive()
+                UsbManager.ACTION_USB_DEVICE_DETACHED -> {
+                    stopSilentAudioKeepAlive()
+                    scope.launch {
+                        dataStore.setDacKeepAliveEnabled(false)
+                    }
+                    stopSelf()
+                }
                 UsbManager.ACTION_USB_DEVICE_ATTACHED -> checkAndManageKeepAlive()
             }
         }
@@ -60,10 +66,16 @@ class DacKeepAliveService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         when (intent?.action) {
             ACTION_STOP_KEEP_ALIVE -> {
+                stopSilentAudioKeepAlive()
+                scope.launch {
+                    dataStore.setDacKeepAliveEnabled(false)
+                }
                 stopSelf()
                 return START_NOT_STICKY
             }
-            ACTION_START_KEEP_ALIVE -> checkAndManageKeepAlive()
+            ACTION_START_KEEP_ALIVE -> {
+                checkAndManageKeepAlive()
+            }
         }
         return START_STICKY
     }
@@ -115,7 +127,7 @@ class DacKeepAliveService : Service() {
     private fun checkAndManageKeepAlive() {
         scope.launch {
             val isEnabled = dataStore.dacKeepAliveEnabled.first()
-            if (!isEnabled || !isUsbDacConnected()) {
+            if (!isEnabled || !isUsbDeviceConnected()) {
                 stopSilentAudioKeepAlive()
                 return@launch
             }
@@ -123,9 +135,8 @@ class DacKeepAliveService : Service() {
             val isInteractive = powerManager.isInteractive
             val isMusicPlaying = audioManager.isMusicActive
 
-            // When screen is OFF, no media app is playing music, AND a USB DAC/Audio Device is attached,
-            // send 0dB silence stream to keep USB DAC power rail active.
-            if (!isInteractive && !isMusicPlaying) {
+            // Keep DAC power rail active when screen is OFF or music is paused
+            if (!isInteractive || !isMusicPlaying) {
                 startSilentAudioKeepAlive()
             } else {
                 stopSilentAudioKeepAlive()
@@ -133,31 +144,12 @@ class DacKeepAliveService : Service() {
         }
     }
 
-    private fun isUsbDacConnected(): Boolean {
+    private fun isUsbDeviceConnected(): Boolean {
         // 1. Check attached physical USB devices via UsbManager
         val usbManager = getSystemService(Context.USB_SERVICE) as? UsbManager
         val attachedDevices = usbManager?.deviceList?.values
-        if (attachedDevices != null && attachedDevices.isNotEmpty()) {
-            for (device in attachedDevices) {
-                // Check device class (0x01 = Audio)
-                if (device.deviceClass == UsbConstants.USB_CLASS_AUDIO) {
-                    return true
-                }
-                // Check interface classes for USB Audio Class
-                for (i in 0 until device.interfaceCount) {
-                    val iface = device.getInterface(i)
-                    if (iface.interfaceClass == UsbConstants.USB_CLASS_AUDIO) {
-                        return true
-                    }
-                }
-                // Check productName / manufacturerName heuristic
-                val prod = try { device.productName?.lowercase() } catch (_: Exception) { null } ?: ""
-                val mfg = try { device.manufacturerName?.lowercase() } catch (_: Exception) { null } ?: ""
-                if (prod.contains("dac") || prod.contains("audio") || prod.contains("headset") ||
-                    mfg.contains("audio") || prod.contains("codec") || prod.contains("sound")) {
-                    return true
-                }
-            }
+        if (!attachedDevices.isNullOrEmpty()) {
+            return true
         }
 
         // 2. Check connected audio output devices via AudioManager
@@ -178,6 +170,7 @@ class DacKeepAliveService : Service() {
 
     @Synchronized
     private fun startSilentAudioKeepAlive() {
+        acquireWakeLock()
         if (audioTrack != null) return
 
         try {
@@ -221,9 +214,12 @@ class DacKeepAliveService : Service() {
                 )
             }
 
-            track.write(silentBuffer, 0, silentBuffer.size)
-            track.setLoopPoints(0, silentBuffer.size / 4, -1) // Infinite loop
-            track.play()
+            val writeResult = track.write(silentBuffer, 0, silentBuffer.size)
+            if (writeResult >= 0) {
+                val frameCount = silentBuffer.size / 4
+                track.setLoopPoints(0, frameCount, -1)
+                track.play()
+            }
 
             audioTrack = track
         } catch (_: Exception) {
@@ -233,6 +229,7 @@ class DacKeepAliveService : Service() {
 
     @Synchronized
     private fun stopSilentAudioKeepAlive() {
+        releaseWakeLock()
         try {
             audioTrack?.apply {
                 if (playState == AudioTrack.PLAYSTATE_PLAYING) {
@@ -244,6 +241,31 @@ class DacKeepAliveService : Service() {
         audioTrack = null
     }
 
+    @Synchronized
+    private fun acquireWakeLock() {
+        try {
+            if (wakeLock == null || wakeLock?.isHeld == false) {
+                wakeLock = powerManager.newWakeLock(
+                    PowerManager.PARTIAL_WAKE_LOCK,
+                    "USBNexus:DacKeepAliveWakeLock"
+                ).apply {
+                    setReferenceCounted(false)
+                    acquire(10 * 60 * 1000L) // 10 minutes timeout per refresh
+                }
+            }
+        } catch (_: Exception) {}
+    }
+
+    @Synchronized
+    private fun releaseWakeLock() {
+        try {
+            if (wakeLock?.isHeld == true) {
+                wakeLock?.release()
+            }
+        } catch (_: Exception) {}
+        wakeLock = null
+    }
+
     companion object {
         const val ACTION_START_KEEP_ALIVE = "com.priyanshudeveloper.usbnexus.START_DAC_KEEP_ALIVE"
         const val ACTION_STOP_KEEP_ALIVE = "com.priyanshudeveloper.usbnexus.STOP_DAC_KEEP_ALIVE"
@@ -252,14 +274,18 @@ class DacKeepAliveService : Service() {
             val intent = Intent(context, DacKeepAliveService::class.java).apply {
                 action = ACTION_START_KEEP_ALIVE
             }
-            context.startService(intent)
+            try {
+                context.startService(intent)
+            } catch (_: Exception) {}
         }
 
         fun stopService(context: Context) {
             val intent = Intent(context, DacKeepAliveService::class.java).apply {
                 action = ACTION_STOP_KEEP_ALIVE
             }
-            context.startService(intent)
+            try {
+                context.startService(intent)
+            } catch (_: Exception) {}
         }
     }
 }

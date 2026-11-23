@@ -1,5 +1,7 @@
 package com.priyanshudeveloper.usbnexus.ui.settings
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -15,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -26,10 +29,13 @@ import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -52,7 +58,9 @@ import com.priyanshudeveloper.usbnexus.ui.theme.TechBlue
 import com.priyanshudeveloper.usbnexus.ui.theme.TextDim
 import com.priyanshudeveloper.usbnexus.ui.theme.TextPrimary
 import com.priyanshudeveloper.usbnexus.ui.theme.TextSecondary
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Composable
 fun SettingsScreen(
@@ -70,6 +78,50 @@ fun SettingsScreen(
     val connectedDevices by connectedDeviceManager.connectedDevices.collectAsState()
 
     val isUsbDeviceConnected = connectedDevices.isNotEmpty()
+
+    // Get dynamic current app version name
+    val currentVersion = remember {
+        try {
+            val pInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+            pInfo.versionName ?: "1.7"
+        } catch (_: Exception) {
+            "1.7"
+        }
+    }
+
+    // Update Check States
+    var newVersionDetected by remember { mutableStateOf<String?>(null) }
+    var isUpdateAvailable by remember { mutableStateOf(false) }
+
+    // Check GitHub Releases for version > currentVersion
+    LaunchedEffect(currentVersion) {
+        withContext(Dispatchers.IO) {
+            try {
+                val url = java.net.URL("https://api.github.com/repos/Priyanshu75799/USB-Nexus/releases/latest")
+                val connection = url.openConnection() as java.net.HttpURLConnection
+                connection.requestMethod = "GET"
+                connection.setRequestProperty("User-Agent", "USBNexus-App")
+                connection.connectTimeout = 4000
+                connection.readTimeout = 4000
+
+                if (connection.responseCode == 200) {
+                    val response = connection.inputStream.bufferedReader().use { it.readText() }
+                    val tagRegex = """"tag_name"\s*:\s*"([^"]+)"""".toRegex()
+                    val match = tagRegex.find(response)
+                    val tagName = match?.groupValues?.get(1)?.removePrefix("v")?.trim() ?: ""
+
+                    if (tagName.isNotBlank() && isVersionGreaterThanCurrent(tagName, currentVersion)) {
+                        newVersionDetected = tagName
+                        isUpdateAvailable = true
+                    } else {
+                        isUpdateAvailable = false
+                    }
+                }
+            } catch (_: Exception) {
+                isUpdateAvailable = false
+            }
+        }
+    }
 
     DisposableEffect(Unit) {
         connectedDeviceManager.startListening()
@@ -336,6 +388,138 @@ fun SettingsScreen(
                     }
                 }
             }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // 3. DEVELOPER & GITHUB UPDATE DETECTION BLOCK
+            val updateCardBorder = if (isUpdateAvailable) StatusSuccessGreen else TechBlue.copy(alpha = 0.4f)
+            val updateCardBg = if (isUpdateAvailable) DarkSurface else DarkSurface.copy(alpha = 0.5f)
+            val buttonBgColor = if (isUpdateAvailable) ElectricCyan else DarkSurfaceVariant
+            val buttonTextColor = if (isUpdateAvailable) DarkBackground else TextDim
+
+            SelectionContainer {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .border(1.dp, updateCardBorder, RoundedCornerShape(12.dp)),
+                    colors = CardDefaults.cardColors(containerColor = updateCardBg),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = "Developer & GitHub Channel",
+                                    color = ElectricCyan,
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    fontFamily = FontFamily.Monospace
+                                )
+                                Spacer(modifier = Modifier.height(2.dp))
+                                Text(
+                                    text = "Developer: Priyanshu Rajput\nGitHub: Priyanshu75799/USB-Nexus\nE-mail ID: iampriyanshudeveloper@gmail.com",
+                                    color = TextSecondary,
+                                    fontSize = 11.sp,
+                                    fontFamily = FontFamily.Monospace
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = if (isUpdateAvailable) "New Version v${newVersionDetected ?: ""} " else "Up to Date (v$currentVersion)",
+                                color = if (isUpdateAvailable) StatusSuccessGreen else TextDim,
+                                fontSize = 8.5.sp,
+                                fontWeight = FontWeight.Bold,
+                                fontFamily = FontFamily.Monospace,
+                                modifier = Modifier
+                                    .background(
+                                        if (isUpdateAvailable) StatusSuccessGreen.copy(alpha = 0.15f) else DarkSurfaceVariant,
+                                        RoundedCornerShape(50.dp)
+                                    )
+                                    .padding(horizontal = 8.dp, vertical = 3.dp)
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(10.dp))
+                        HorizontalDivider(color = CardBorder)
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        Text(
+                            text = "If you have any issue with my app, please send an email to my Email ID and I will try to fix it in the next version of the app.",
+                            color = TextSecondary,
+                            fontSize = 11.sp,
+                            fontFamily = FontFamily.Monospace,
+                            lineHeight = 16.sp
+                        )
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Text(
+                            text = if (isUpdateAvailable) {
+                                "A new update (v${newVersionDetected}) has been detected on GitHub! Tap the cylindrical button below to open the repository and download the latest release."
+                            } else {
+                                "Currently running USB Nexus v$currentVersion. Block & button will automatically activate whenever a new release (> v$currentVersion) is published on GitHub."
+                            },
+                            color = if (isUpdateAvailable) TextPrimary else TextDim,
+                            fontSize = 11.sp,
+                            fontFamily = FontFamily.Monospace,
+                            lineHeight = 16.sp
+                        )
+
+                        Spacer(modifier = Modifier.height(14.dp))
+
+                        // Cylindrical Button (RoundedCornerShape 50.dp)
+                        Button(
+                            onClick = {
+                                val repoUrl = "https://github.com/Priyanshu75799/USB-Nexus/releases/latest"
+                                try {
+                                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(repoUrl)).apply {
+                                        flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                                    }
+                                    context.startActivity(intent)
+                                } catch (_: Exception) {}
+                            },
+                            enabled = isUpdateAvailable,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(44.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = buttonBgColor,
+                                disabledContainerColor = DarkSurfaceVariant.copy(alpha = 0.5f)
+                            ),
+                            shape = RoundedCornerShape(50.dp)
+                        ) {
+                            Text(
+                                text = if (isUpdateAvailable) "🚀 Download New Version (GitHub)" else "App Up to Date (v$currentVersion)",
+                                color = buttonTextColor,
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                fontFamily = FontFamily.Monospace,
+                                letterSpacing = 0.8.sp
+                            )
+                        }
+                    }
+                }
+            }
         }
     }
+}
+
+private fun isVersionGreaterThanCurrent(latest: String, current: String): Boolean {
+    try {
+        val latestParts = latest.split(".").mapNotNull { it.toIntOrNull() }
+        val currentParts = current.split(".").mapNotNull { it.toIntOrNull() }
+
+        val maxLen = maxOf(latestParts.size, currentParts.size)
+        for (i in 0 until maxLen) {
+            val l = latestParts.getOrElse(i) { 0 }
+            val c = currentParts.getOrElse(i) { 0 }
+            if (l > c) return true
+            if (l < c) return false
+        }
+    } catch (_: Exception) {}
+    return false
 }

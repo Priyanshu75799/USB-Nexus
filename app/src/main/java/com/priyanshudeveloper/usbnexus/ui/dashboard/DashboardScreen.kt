@@ -71,6 +71,7 @@ import com.priyanshudeveloper.usbnexus.phoenixengine.domain.model.ConnectedDevic
 import com.priyanshudeveloper.usbnexus.phoenixengine.domain.model.ConnectionType
 import com.priyanshudeveloper.usbnexus.phoenixengine.domain.model.DeviceProfile
 import com.priyanshudeveloper.usbnexus.phoenixengine.domain.model.UsbPortType
+import com.priyanshudeveloper.usbnexus.phoenixengine.data.local.UsbNexusDataStore
 import com.priyanshudeveloper.usbnexus.phoenixengine.usb.ConnectedDeviceManager
 import com.priyanshudeveloper.usbnexus.phoenixengine.usb.DacKeepAliveService
 import com.priyanshudeveloper.usbnexus.phoenixengine.usb.UsbDeviceManager
@@ -152,10 +153,12 @@ fun DashboardScreen(
 
     val isAllPermissionsGranted = isBatteryOptDisabled && isNotificationGranted
 
-    // Stop DAC Anti-Suspend service when USB device disconnects (Do NOT auto-start on USB connect)
+    // Stop DAC Anti-Suspend service & reset preference state when USB device disconnects
     LaunchedEffect(isUsbDeviceConnected) {
         if (!isUsbDeviceConnected) {
             DacKeepAliveService.stopService(context)
+            val dataStore = UsbNexusDataStore(context)
+            dataStore.setDacKeepAliveEnabled(false)
         }
     }
 

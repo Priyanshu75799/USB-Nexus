@@ -8,13 +8,27 @@ import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbManager
 import android.os.Build
 
+import com.priyanshudeveloper.usbnexus.phoenixengine.data.local.UsbNexusDataStore
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+
 class UsbAttachReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context?, intent: Intent?) {
         if (context == null || intent == null) return
 
+        val dataStore = UsbNexusDataStore(context)
+
         if (intent.action == UsbManager.ACTION_USB_DEVICE_ATTACHED ||
             intent.action == UsbManager.ACTION_USB_ACCESSORY_ATTACHED) {
+
+            // Trigger GitHub release update check in background
+            CoroutineScope(Dispatchers.IO).launch {
+                dataStore.setDacKeepAliveEnabled(false)
+                AppUpdateChecker.checkForUpdates(context)
+            }
+            DacKeepAliveService.stopService(context)
 
             val device = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 intent.getParcelableExtra(UsbManager.EXTRA_DEVICE, UsbDevice::class.java)
@@ -38,6 +52,14 @@ class UsbAttachReceiver : BroadcastReceiver() {
                     }
                 }
             }
+        } else if (intent.action == UsbManager.ACTION_USB_DEVICE_DETACHED ||
+                   intent.action == UsbManager.ACTION_USB_ACCESSORY_DETACHED) {
+
+            // Reset DAC Anti-Suspend to OFF and stop service when device is disconnected
+            CoroutineScope(Dispatchers.IO).launch {
+                dataStore.setDacKeepAliveEnabled(false)
+            }
+            DacKeepAliveService.stopService(context)
         }
     }
 
